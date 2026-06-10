@@ -9,21 +9,24 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        primary: "#185FA5",
-        "primary-light": "#E6F1FB",
-        cta: "#1A6B3A",
+        primary: "#2C4033",
+        "primary-light": "#EAF3DE",
+        cta: "#2C4033",
         "cta-light": "#EAF3DE",
-        page: "#F5F7FA",
+        page: "#FDFBF7",
         card: "#FFFFFF",
-        body: "#222222",
-        secondary: "#666666",
+        body: "#121212",
+        secondary: "#525252",
+        paper: "#F3F1EC",
+        line: "#E4DFD8",
+        rust: "#C85A32",
         error: "#B42318"
       },
       borderRadius: {
         card: "8px"
       },
       boxShadow: {
-        soft: "0 10px 30px rgba(24, 95, 165, 0.08)"
+        soft: "0 18px 45px rgba(44, 64, 51, 0.08)"
       }
     }
   },

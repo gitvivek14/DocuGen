@@ -17,6 +17,7 @@ export const rentReceiptSchema = z
     rentStartDate: z.string().trim().min(1, "Enter rent period start date"),
     rentEndDate: z.string().trim().min(1, "Enter rent period end date"),
     paymentMethod: z.string().trim().min(1, "Select a payment method"),
+    receiptNo: z.string().trim().min(1, "Enter receipt number"),
     propertyAddress: z.string().trim().min(1, "Enter property address"),
     receiptDate: z.string().trim().min(1, "Enter receipt date"),
     receiptMode: z.enum(["monthly", "quarterly"]),

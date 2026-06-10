@@ -12,17 +12,22 @@ export function ToolCard({
   comingSoon?: boolean;
 }) {
   const body = (
-    <div className="flex h-full flex-col rounded-card border border-slate-200 bg-white p-4 shadow-soft transition hover:border-primary">
+    <div className="dg-card flex h-full flex-col p-6 transition hover:-translate-y-0.5 hover:border-primary">
       <div className="flex items-start justify-between gap-3">
-        <h2 className="text-[18px] font-medium text-body">{title}</h2>
+        <span className="rounded-full bg-primary-light px-3 py-1 text-[12px] font-bold text-primary">
+          {comingSoon ? "Soon" : "Free"}
+        </span>
         {comingSoon ? (
-          <span className="rounded-full bg-slate-100 px-2 py-1 text-[12px] text-secondary">
-            Coming soon
+          <span className="rounded-full bg-paper px-2 py-1 text-[12px] text-secondary">
+            Planned
           </span>
         ) : null}
       </div>
-      <p className="mt-2 flex-1 text-[14px] text-secondary">{description}</p>
-      <p className="mt-4 text-[13px] font-medium text-primary">
+      <h2 className="mt-5 text-[21px] font-extrabold leading-tight tracking-tight text-body">
+        {title}
+      </h2>
+      <p className="mt-3 flex-1 text-[15px] text-secondary">{description}</p>
+      <p className="mt-5 text-[14px] font-bold text-primary">
         {comingSoon ? "Planned" : "Open tool"}
       </p>
     </div>

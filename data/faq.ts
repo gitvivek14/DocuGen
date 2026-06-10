@@ -33,7 +33,7 @@ export const rentReceiptFaqs = [
   {
     question: "Can I generate multiple months at once?",
     answer:
-      "The MVP includes a premium bulk-generation placeholder. Full checkout and bulk downloads are not enabled yet."
+      "The single receipt generator is free. Bulk multi-month receipts are reserved for paid bundles."
   }
 ];
 

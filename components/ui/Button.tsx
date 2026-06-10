@@ -10,11 +10,11 @@ interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variants: Record<ButtonVariant, string> = {
   primary:
-    "bg-cta text-white hover:bg-[#15582f] focus:ring-cta disabled:bg-slate-300 disabled:text-slate-600",
+    "bg-primary text-white hover:bg-[#213127] focus:ring-primary disabled:bg-line disabled:text-secondary",
   secondary:
-    "border border-primary bg-white text-primary hover:bg-primary-light focus:ring-primary disabled:border-slate-300 disabled:text-slate-500",
+    "border-2 border-body bg-white text-body hover:bg-body hover:text-white focus:ring-primary disabled:border-line disabled:text-secondary",
   ghost:
-    "bg-transparent text-primary hover:bg-primary-light focus:ring-primary disabled:text-slate-500"
+    "bg-transparent text-primary hover:bg-primary-light focus:ring-primary disabled:text-secondary"
 };
 
 export function Button({
@@ -28,7 +28,7 @@ export function Button({
     <button
       type={type}
       className={cn(
-        "inline-flex min-h-11 items-center justify-center rounded-card px-4 text-[15px] font-medium transition focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed",
+        "inline-flex min-h-12 items-center justify-center rounded-lg px-5 text-[15px] font-semibold transition active:scale-[0.98] focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:cursor-not-allowed",
         variants[variant],
         fullWidth && "w-full",
         className

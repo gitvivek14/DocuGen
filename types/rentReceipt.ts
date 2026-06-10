@@ -15,6 +15,7 @@ export interface RentReceiptFormValues {
   rentStartDate: string;
   rentEndDate: string;
   paymentMethod: string;
+  receiptNo: string;
   propertyAddress: string;
   receiptDate: string;
   receiptMode: ReceiptMode;

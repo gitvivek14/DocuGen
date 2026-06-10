@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
-import { TrustBar } from "@/components/layout/TrustBar";
 import { siteName, siteUrl } from "@/lib/seo/site";
 import "./globals.css";
 
@@ -28,10 +27,9 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <body suppressHydrationWarning>
         <Header />
-        <TrustBar />
         {children}
         <Footer />
       </body>

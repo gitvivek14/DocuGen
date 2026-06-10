@@ -27,6 +27,7 @@ function emptyNumber() {
 function getDefaultValues(region?: RentRegionConfig): RentReceiptFormValues {
   const country = region?.country ?? "India";
   const config = COUNTRY_CONFIGS[country];
+  const receiptNo = `DG-${Math.floor(100000 + Math.random() * 900000)}`;
 
   return {
     country,
@@ -41,6 +42,7 @@ function getDefaultValues(region?: RentRegionConfig): RentReceiptFormValues {
     rentStartDate: todayISO(),
     rentEndDate: todayISO(),
     paymentMethod: paymentMethods[0],
+    receiptNo,
     propertyAddress: "",
     receiptDate: todayISO(),
     receiptMode: "monthly",
@@ -51,7 +53,7 @@ function getDefaultValues(region?: RentRegionConfig): RentReceiptFormValues {
 }
 
 export function RentReceiptTool({ region }: { region?: RentRegionConfig }) {
-  const [premiumMessage, setPremiumMessage] = useState("");
+  const [hasDownloaded, setHasDownloaded] = useState(false);
   const {
     register,
     handleSubmit,
@@ -100,10 +102,10 @@ export function RentReceiptTool({ region }: { region?: RentRegionConfig }) {
     { label: "Quarterly", value: "quarterly" }
   ];
 
-  const title = region?.h1 ?? "Rent receipt generator";
+  const title = region?.h1 ?? "Rent receipts done in 60 seconds.";
   const description =
     region?.intro ??
-    "Create a clean rent receipt PDF with landlord, tenant, rent, property, and payment details. Preview live and download instantly.";
+    "Country-aware fields, instant PDF, HRA-compliant for India. Switch to 12-month bundle for tax filing.";
 
   const previewAmount = formatCurrency(Number(watched.monthlyRent || 0), selectedCountry);
   const preview = useMemo(
@@ -123,6 +125,7 @@ export function RentReceiptTool({ region }: { region?: RentRegionConfig }) {
       >
         <dl className="space-y-2">
           <PreviewField label="Country" value={`${selectedCountry} - ${watched.region || ""}`} />
+          <PreviewField label="No" value={watched.receiptNo} />
           <PreviewField label="Landlord" value={watched.landlordName} />
           <PreviewField label="Tenant" value={watched.tenantName} />
           <PreviewField label="Amount" value={previewAmount} />
@@ -145,6 +148,7 @@ export function RentReceiptTool({ region }: { region?: RentRegionConfig }) {
       watched.landlordPan,
       watched.paymentMethod,
       watched.propertyAddress,
+      watched.receiptNo,
       watched.region,
       watched.rentEndDate,
       watched.rentStartDate,
@@ -154,10 +158,38 @@ export function RentReceiptTool({ region }: { region?: RentRegionConfig }) {
 
   const onDownload = handleSubmit((values) => {
     generateRentReceiptPdf(values);
+    setHasDownloaded(true);
   });
+
+  const hasStarted = Boolean(
+    watched.landlordName ||
+      watched.landlordAddress ||
+      watched.landlordPan ||
+      watched.tenantName ||
+      watched.tenantAddress ||
+      watched.propertyAddress ||
+      Number(watched.monthlyRent || 0) > 0
+  );
+  const activeStep = hasDownloaded ? 2 : hasStarted ? 1 : 0;
 
   const form = (
     <form className="space-y-5" id="rent-receipt-form" onSubmit={onDownload}>
+      <div className="inline-flex rounded-xl border border-line bg-paper p-1">
+        <button
+          className="rounded-lg bg-white px-5 py-3 text-[14px] font-semibold text-body shadow-sm"
+          type="button"
+        >
+          Single Receipt
+        </button>
+        <button
+          className="cursor-not-allowed rounded-lg px-5 py-3 text-[14px] font-semibold text-secondary opacity-60"
+          type="button"
+          disabled
+        >
+          12-Month Bundle (Paid)
+        </button>
+      </div>
+
       <FormSection
         title="Country/region"
         description="Select the location first so currency and local fields can update."
@@ -185,14 +217,16 @@ export function RentReceiptTool({ region }: { region?: RentRegionConfig }) {
       </FormSection>
 
       <FormSection title="Landlord details">
-        <Input
-          label="Landlord name"
-          autoComplete="name"
+          <Input
+            label="Landlord name"
+            placeholder="Ramesh Sharma"
+            autoComplete="name"
           error={errors.landlordName?.message}
           {...register("landlordName")}
         />
-        <Textarea
-          label="Landlord address"
+          <Textarea
+            label="Landlord address"
+            placeholder="House no, street, city"
           error={errors.landlordAddress?.message}
           {...register("landlordAddress")}
         />
@@ -213,14 +247,16 @@ export function RentReceiptTool({ region }: { region?: RentRegionConfig }) {
       </FormSection>
 
       <FormSection title="Tenant details">
-        <Input
-          label="Tenant name"
+          <Input
+            label="Tenant name"
+            placeholder="Your name"
           autoComplete="name"
           error={errors.tenantName?.message}
           {...register("tenantName")}
         />
         <Textarea
           label="Tenant address"
+          placeholder="Flat 12B, Andheri East, Mumbai"
           error={errors.tenantAddress?.message}
           {...register("tenantAddress")}
         />
@@ -230,6 +266,7 @@ export function RentReceiptTool({ region }: { region?: RentRegionConfig }) {
         <div className="grid gap-4 md:grid-cols-2">
           <Input
             label={countryConfig.rentLabel}
+            placeholder="25000"
             type="number"
             min="0"
             step="0.01"
@@ -267,8 +304,14 @@ export function RentReceiptTool({ region }: { region?: RentRegionConfig }) {
             {...register("receiptMode")}
           />
         </div>
+        <Input
+          label="Receipt No."
+          error={errors.receiptNo?.message}
+          {...register("receiptNo")}
+        />
         <Textarea
           label="Property address"
+          placeholder="Flat 12B, Andheri East, Mumbai"
           error={errors.propertyAddress?.message}
           {...register("propertyAddress")}
         />
@@ -301,44 +344,29 @@ export function RentReceiptTool({ region }: { region?: RentRegionConfig }) {
   );
 
   const cta = (
-    <section className="rounded-card border border-slate-200 bg-white p-4 shadow-soft">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <span className="inline-flex w-fit rounded-full bg-cta-light px-3 py-1 text-[13px] font-medium text-cta">
-          Free - no watermark
+    <section className="space-y-8">
+      <div className="space-y-4">
+        <span className="inline-flex w-fit rounded-full bg-primary-light px-3 py-1 text-[12px] font-bold uppercase tracking-[0.12em] text-primary">
+          Free · no watermark
         </span>
-        <Button type="submit" form="rent-receipt-form" disabled={isSubmitting}>
-          Download free PDF
+        <Button
+          className="min-h-16 gap-3 text-[18px]"
+          type="submit"
+          form="rent-receipt-form"
+          fullWidth
+          disabled={isSubmitting}
+        >
+          <svg aria-hidden="true" className="h-6 w-6" viewBox="0 0 24 24" fill="none">
+            <path d="M12 3v12M7 10l5 5 5-5M5 21h14" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.4" />
+          </svg>
+          Download Free PDF
         </Button>
       </div>
-      <div className="my-4 flex items-center gap-3 text-[13px] text-secondary">
-        <span className="h-px flex-1 bg-slate-200" />
-        <span>or upgrade for more</span>
-        <span className="h-px flex-1 bg-slate-200" />
-      </div>
       <UpgradeCard
-        title="Bulk receipts"
-        description="Prepare the data model for 1-12 monthly receipts. Checkout is not enabled in this MVP."
-      >
-        <div className="grid gap-3 sm:grid-cols-[1fr_auto] sm:items-end">
-          <Input
-            label="Number of months"
-            type="number"
-            min="1"
-            max="12"
-            error={errors.bulkMonths?.message}
-            {...register("bulkMonths")}
-          />
-          <Button
-            variant="secondary"
-            onClick={() => setPremiumMessage("Premium checkout coming soon.")}
-          >
-            Generate bulk receipts
-          </Button>
-        </div>
-        {premiumMessage ? (
-          <p className="mt-3 text-[13px] font-medium text-cta">{premiumMessage}</p>
-        ) : null}
-      </UpgradeCard>
+        title="Need a full year? Get the 12-month bundle"
+        priceLabel="Early access"
+        description="Generate Apr-Mar HRA receipts in one PDF with sequential numbers and dates. Perfect for tax filing."
+      />
     </section>
   );
 
@@ -351,12 +379,14 @@ export function RentReceiptTool({ region }: { region?: RentRegionConfig }) {
 
   return (
     <ToolShell
+      eyebrow="Tool · Rent receipt"
       title={title}
       description={description}
       form={form}
       preview={preview}
       cta={cta}
       note={note}
+      activeStep={activeStep}
     />
   );
 }

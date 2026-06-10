@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700;800&display=swap");
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -16,11 +18,18 @@ html {
 
 body {
   margin: 0;
-  background: #f5f7fa;
-  color: #222222;
-  font-size: 14px;
+  background: #fdfbf7;
+  color: #121212;
+  font-family: "IBM Plex Sans", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-size: 16px;
   line-height: 1.6;
   letter-spacing: 0;
+}
+
+h1,
+h2,
+h3 {
+  font-family: "Cabinet Grotesk", "IBM Plex Sans", system-ui, sans-serif;
 }
 
 a {
@@ -36,6 +45,32 @@ textarea {
 }
 
 ::selection {
-  background: #e6f1fb;
-  color: #222222;
+  background: #eaf3de;
+  color: #121212;
+}
+
+.dg-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #c85a32;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.dg-eyebrow::before {
+  content: "";
+  display: inline-block;
+  width: 32px;
+  height: 1px;
+  background: currentColor;
+}
+
+.dg-card {
+  border: 1px solid #e4dfd8;
+  background: #ffffff;
+  border-radius: 14px;
+  box-shadow: 0 18px 45px rgba(44, 64, 51, 0.08);
 }

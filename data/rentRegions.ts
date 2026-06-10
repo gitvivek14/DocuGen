@@ -40,8 +40,8 @@ export const RENT_SEO_REGIONS: RentRegionConfig[] = [
   regionType: "city",
   h1: `${city} rent receipt generator`,
   intro: `Create a clean rent receipt PDF for ${city} with India-specific HRA, PAN, and revenue stamp notes. Your data stays in your browser.`,
-  officialLinkLabel: "Official tax guidance placeholder",
-  officialLinkPlaceholder: "Add official Indian tax or employer guidance link",
+  officialLinkLabel: "Official tax guidance",
+  officialLinkPlaceholder: "Check Indian tax or employer guidance before filing",
   faqs: indiaFaqs(city)
 }));
 
@@ -58,8 +58,8 @@ RENT_SEO_REGIONS.push(
     regionType: "province" as const,
     h1: `${province} rent receipt generator`,
     intro: `Create a clean rent receipt PDF for ${province}. Fill landlord, tenant, property, rent, and payment details, then download instantly.`,
-    officialLinkLabel: "Official tenancy guidance placeholder",
-    officialLinkPlaceholder: "Add official provincial tenancy guidance link",
+    officialLinkLabel: "Official tenancy guidance",
+    officialLinkPlaceholder: "Check official provincial tenancy guidance before use",
     faqs: canadaFaqs(province)
   }))
 );

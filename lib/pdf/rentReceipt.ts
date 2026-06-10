@@ -17,6 +17,7 @@ export function generateRentReceiptPdf(data: RentReceiptFormValues) {
 
   let y = 122;
   y = addSectionTitle(doc, "Receipt details", y);
+  y = addField(doc, "Receipt no.", data.receiptNo, y);
   y = addField(doc, "Country/region", `${data.country} - ${data.region}`, y);
   y = addField(doc, "Receipt date", formatDate(data.receiptDate), y);
   y = addField(

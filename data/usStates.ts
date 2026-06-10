@@ -128,7 +128,7 @@ export const US_STATES: BillOfSaleStateConfig[] = statePairs.map(
       abbreviation,
       slug,
       dmvLabel: `${name} motor vehicle agency`,
-      officialLinkPlaceholder: "Official DMV link placeholder",
+      officialLinkPlaceholder: "Check the official motor vehicle agency website",
       note: `Check ${name} motor vehicle requirements before using this template.`
     };
     const override = overrideNotes[slug] ?? {};

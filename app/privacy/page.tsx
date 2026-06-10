@@ -22,7 +22,8 @@ export default function PrivacyPage() {
         </p>
         <p>
           Basic website hosting or analytics, if added later, must not include document field
-          values. Premium checkout is a placeholder in this MVP and is not connected to Stripe.
+          values. Payment providers for premium features should only receive checkout details, not
+          your document field values.
         </p>
       </div>
     </main>

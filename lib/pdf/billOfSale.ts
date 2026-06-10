@@ -53,7 +53,7 @@ export function generateBillOfSalePdf(data: BillOfSaleFormValues) {
   y = addSectionTitle(doc, "Disclosure and terms", y + 6);
   y = addParagraph(
     doc,
-    `Odometer disclosure: The seller states that the odometer reading is ${data.odometer.toLocaleString()} miles to the best of the seller's knowledge.`
+    `Federal odometer disclosure: The seller states that the odometer reading is ${data.odometer.toLocaleString()} miles to the best of the seller's knowledge.`
   , y);
 
   if (data.asIs) {

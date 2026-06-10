@@ -21,8 +21,8 @@ export default function TermsPage() {
           requirements before using any generated document.
         </p>
         <p>
-          Free PDF downloads are provided without watermark in this MVP. Premium features shown in
-          the interface are placeholders and may change.
+          Free PDF downloads are provided without watermark. Premium features shown in the
+          interface may change.
         </p>
       </div>
     </main>

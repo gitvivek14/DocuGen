@@ -10,10 +10,10 @@ export function FormSection({
   children: ReactNode;
 }) {
   return (
-    <section className="rounded-card border border-slate-200 bg-card p-4 shadow-soft">
+    <section className="dg-card p-6">
       <div className="mb-4">
-        <h2 className="text-[18px] font-medium text-body">{title}</h2>
-        {description ? <p className="mt-1 text-[13px] text-secondary">{description}</p> : null}
+        <h2 className="text-[12px] font-bold uppercase tracking-[0.18em] text-rust">{title}</h2>
+        {description ? <p className="mt-2 text-[14px] text-secondary">{description}</p> : null}
       </div>
       <div className="space-y-4">{children}</div>
     </section>

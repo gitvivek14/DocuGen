@@ -69,7 +69,7 @@ function getDefaultValues(stateConfig?: BillOfSaleStateConfig): BillOfSaleFormVa
 }
 
 export function VehicleBillOfSaleTool({ stateConfig }: { stateConfig?: BillOfSaleStateConfig }) {
-  const [premiumMessage, setPremiumMessage] = useState("");
+  const [hasDownloaded, setHasDownloaded] = useState(false);
   const {
     register,
     handleSubmit,
@@ -87,10 +87,10 @@ export function VehicleBillOfSaleTool({ stateConfig }: { stateConfig?: BillOfSal
   const stateOptions = orderedStateOptions();
   const paymentOptions = paymentMethods.map((method) => ({ label: method, value: method }));
 
-  const title = stateConfig?.h1 ?? "Vehicle bill of sale generator";
+  const title = stateConfig?.h1 ?? "Sell a vehicle the legit way.";
   const description =
     stateConfig?.intro ??
-    "Create a clean vehicle bill of sale PDF with seller, buyer, vehicle, odometer, and sale details. Preview live and download instantly.";
+    "State-aware. 17-character VIN validation. Federal odometer disclosure auto-included. DMV-ready PDF in seconds.";
 
   const preview = useMemo(
     () => (
@@ -144,7 +144,24 @@ export function VehicleBillOfSaleTool({ stateConfig }: { stateConfig?: BillOfSal
 
   const onDownload = handleSubmit((values) => {
     generateBillOfSalePdf(values);
+    setHasDownloaded(true);
   });
+
+  const hasStarted = Boolean(
+    watched.sellerName ||
+      watched.sellerAddress ||
+      watched.buyerName ||
+      watched.buyerAddress ||
+      watched.vehicleMake ||
+      watched.vehicleModel ||
+      watched.bodyType ||
+      watched.color ||
+      watched.vin ||
+      Number(watched.vehicleYear || 0) > 0 ||
+      Number(watched.odometer || 0) > 0 ||
+      Number(watched.salePrice || 0) > 0
+  );
+  const activeStep = hasDownloaded ? 2 : hasStarted ? 1 : 0;
 
   const form = (
     <form className="space-y-5" id="vehicle-bill-of-sale-form" onSubmit={onDownload}>
@@ -152,14 +169,22 @@ export function VehicleBillOfSaleTool({ stateConfig }: { stateConfig?: BillOfSal
         title="State"
         description="Choose the state first so DMV notes and labels can update."
       >
-        <Select label="US state" options={stateOptions} error={errors.state?.message} {...register("state")} />
+        <div className="grid gap-4 md:grid-cols-2">
+          <Select label="US state" options={stateOptions} error={errors.state?.message} {...register("state")} />
+          <Input
+            label="Sale date"
+            type="date"
+            error={errors.saleDate?.message}
+            {...register("saleDate")}
+          />
+        </div>
         <p className="text-[13px] text-secondary">
           {activeState?.note ?? "Check your local motor vehicle agency before use."}
         </p>
       </FormSection>
 
       <FormSection title="Seller details">
-        <Input label="Seller name" error={errors.sellerName?.message} {...register("sellerName")} />
+        <Input label="Full name" error={errors.sellerName?.message} {...register("sellerName")} />
         <Textarea
           label="Seller address"
           error={errors.sellerAddress?.message}
@@ -173,7 +198,7 @@ export function VehicleBillOfSaleTool({ stateConfig }: { stateConfig?: BillOfSal
       </FormSection>
 
       <FormSection title="Buyer details">
-        <Input label="Buyer name" error={errors.buyerName?.message} {...register("buyerName")} />
+        <Input label="Full name" error={errors.buyerName?.message} {...register("buyerName")} />
         <Textarea
           label="Buyer address"
           error={errors.buyerAddress?.message}
@@ -191,16 +216,18 @@ export function VehicleBillOfSaleTool({ stateConfig }: { stateConfig?: BillOfSal
           <Input
             label="Year"
             type="number"
+            placeholder="2018"
             min="1900"
             error={errors.vehicleYear?.message}
             {...register("vehicleYear")}
           />
-          <Input label="Make" error={errors.vehicleMake?.message} {...register("vehicleMake")} />
-          <Input label="Model" error={errors.vehicleModel?.message} {...register("vehicleModel")} />
+          <Input label="Make" placeholder="Honda" error={errors.vehicleMake?.message} {...register("vehicleMake")} />
+          <Input label="Model" placeholder="Civic" error={errors.vehicleModel?.message} {...register("vehicleModel")} />
           <Input label="Body type" error={errors.bodyType?.message} {...register("bodyType")} />
           <Input label="Color" error={errors.color?.message} {...register("color")} />
           <Input
             label="VIN"
+            placeholder="1HGCM82633A123456"
             maxLength={17}
             className="uppercase"
             error={errors.vin?.message}
@@ -220,6 +247,7 @@ export function VehicleBillOfSaleTool({ stateConfig }: { stateConfig?: BillOfSal
             label="Odometer reading"
             type="number"
             min="0"
+            placeholder="86420"
             error={errors.odometer?.message}
             {...register("odometer")}
           />
@@ -235,12 +263,6 @@ export function VehicleBillOfSaleTool({ stateConfig }: { stateConfig?: BillOfSal
             step="0.01"
             error={errors.salePrice?.message}
             {...register("salePrice")}
-          />
-          <Input
-            label="Sale date"
-            type="date"
-            error={errors.saleDate?.message}
-            {...register("saleDate")}
           />
           <Select
             label="Payment method"
@@ -264,7 +286,7 @@ export function VehicleBillOfSaleTool({ stateConfig }: { stateConfig?: BillOfSal
           <p>
             {activeState?.dmvLabel ?? "Official DMV"}:{" "}
             <span className="font-medium text-body">
-              {activeState?.officialLinkPlaceholder ?? "Official link placeholder"}
+              {activeState?.officialLinkPlaceholder ?? "Check the official motor vehicle agency website"}
             </span>
           </p>
           <p>
@@ -277,34 +299,29 @@ export function VehicleBillOfSaleTool({ stateConfig }: { stateConfig?: BillOfSal
   );
 
   const cta = (
-    <section className="rounded-card border border-slate-200 bg-white p-4 shadow-soft">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <span className="inline-flex w-fit rounded-full bg-cta-light px-3 py-1 text-[13px] font-medium text-cta">
-          Free - no watermark
+    <section className="space-y-8">
+      <div className="space-y-4">
+        <span className="inline-flex w-fit rounded-full bg-primary-light px-3 py-1 text-[12px] font-bold uppercase tracking-[0.12em] text-primary">
+          Free · DMV-ready
         </span>
-        <Button type="submit" form="vehicle-bill-of-sale-form" disabled={isSubmitting}>
-          Download free PDF
+        <Button
+          className="min-h-16 gap-3 text-[18px]"
+          type="submit"
+          form="vehicle-bill-of-sale-form"
+          fullWidth
+          disabled={isSubmitting}
+        >
+          <svg aria-hidden="true" className="h-6 w-6" viewBox="0 0 24 24" fill="none">
+            <path d="M12 3v12M7 10l5 5 5-5M5 21h14" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.4" />
+          </svg>
+          Download Free PDF
         </Button>
-      </div>
-      <div className="my-4 flex items-center gap-3 text-[13px] text-secondary">
-        <span className="h-px flex-1 bg-slate-200" />
-        <span>or upgrade for more</span>
-        <span className="h-px flex-1 bg-slate-200" />
       </div>
       <UpgradeCard
-        title="Premium packets"
-        description="Future premium downloads can bundle extra checklists and copies. Checkout is not enabled in this MVP."
-      >
-        <Button
-          variant="secondary"
-          onClick={() => setPremiumMessage("Premium checkout coming soon.")}
-        >
-          Generate premium packet
-        </Button>
-        {premiumMessage ? (
-          <p className="mt-3 text-[13px] font-medium text-cta">{premiumMessage}</p>
-        ) : null}
-      </UpgradeCard>
+        title="Premium notary-ready template"
+        priceLabel="Early access"
+        description="Adds a notary-ready layout, extra copies, and supporting checklist."
+      />
     </section>
   );
 
@@ -312,19 +329,21 @@ export function VehicleBillOfSaleTool({ stateConfig }: { stateConfig?: BillOfSal
     <p>
       {activeState?.dmvLabel ?? "Official DMV"}:{" "}
       <span className="font-medium text-body">
-        {activeState?.officialLinkPlaceholder ?? "Official link placeholder"}
+        {activeState?.officialLinkPlaceholder ?? "Check the official motor vehicle agency website"}
       </span>
     </p>
   );
 
   return (
     <ToolShell
+      eyebrow="Tool · Vehicle bill of sale"
       title={title}
       description={description}
       form={form}
       preview={preview}
       cta={cta}
       note={note}
+      activeStep={activeStep}
     />
   );
 }
